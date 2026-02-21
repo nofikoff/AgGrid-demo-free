@@ -1,11 +1,12 @@
 import type { ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
+import { formatCurrency } from '../../formatters/currency'
 
 export class CurrencyRenderer implements ICellRendererComp {
   private eGui!: HTMLSpanElement
 
   init(params: ICellRendererParams): void {
     this.eGui = document.createElement('span')
-    this.updateValue(params.value)
+    this.eGui.textContent = formatCurrency(params.value as number)
   }
 
   getGui(): HTMLElement {
@@ -13,17 +14,9 @@ export class CurrencyRenderer implements ICellRendererComp {
   }
 
   refresh(params: ICellRendererParams): boolean {
-    this.updateValue(params.value)
+    this.eGui.textContent = formatCurrency(params.value as number)
     return true
   }
 
   destroy(): void {}
-
-  private updateValue(value: unknown): void {
-    const num = value as number
-    this.eGui.textContent =
-      num != null
-        ? `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-        : '—'
-  }
 }

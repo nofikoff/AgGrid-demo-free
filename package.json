@@ -10,9 +10,13 @@
   },
   "dependencies": {
     "@faker-js/faker": "^10.3.0",
+    "@primevue/themes": "^4.5.4",
     "ag-grid-community": "^35.1.0",
     "ag-grid-vue3": "^35.1.0",
     "naive-ui": "^2.43.2",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.5.4",
+    "tabulator-tables": "^6.3.1",
     "vue": "^3.5.25",
     "vue-router": "^5.0.2"
   },

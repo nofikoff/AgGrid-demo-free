@@ -1,4 +1,5 @@
 import type { ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
+import { formatPercent } from '../../formatters/percent'
 
 export class PercentRenderer implements ICellRendererComp {
   private eGui!: HTMLSpanElement
@@ -20,19 +21,8 @@ export class PercentRenderer implements ICellRendererComp {
   destroy(): void {}
 
   private updateValue(value: unknown): void {
-    const num = value as number
-    if (num == null) {
-      this.eGui.textContent = '—'
-      return
-    }
-    const pct = (num * 100).toFixed(2)
-    this.eGui.textContent = `${pct}%`
-    if (num > 0) {
-      this.eGui.style.color = '#16a34a'
-    } else if (num < 0) {
-      this.eGui.style.color = '#dc2626'
-    } else {
-      this.eGui.style.color = ''
-    }
+    const result = formatPercent(value as number)
+    this.eGui.textContent = result.text
+    this.eGui.style.color = result.color
   }
 }

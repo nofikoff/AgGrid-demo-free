@@ -1,4 +1,5 @@
 import type { ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
+import { formatProfit } from '../../formatters/profit'
 
 export class ProfitRenderer implements ICellRendererComp {
   private eGui!: HTMLSpanElement
@@ -21,21 +22,8 @@ export class ProfitRenderer implements ICellRendererComp {
   destroy(): void {}
 
   private updateValue(value: unknown): void {
-    const num = value as number
-    if (num == null) {
-      this.eGui.textContent = '—'
-      return
-    }
-    const formatted = `$${Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-    if (num > 0) {
-      this.eGui.textContent = `▲ +${formatted}`
-      this.eGui.style.color = '#16a34a'
-    } else if (num < 0) {
-      this.eGui.textContent = `▼ -${formatted}`
-      this.eGui.style.color = '#dc2626'
-    } else {
-      this.eGui.textContent = `${formatted}`
-      this.eGui.style.color = '#6b7280'
-    }
+    const result = formatProfit(value as number)
+    this.eGui.textContent = result.text
+    this.eGui.style.color = result.color
   }
 }

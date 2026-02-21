@@ -1,48 +1,53 @@
 <script setup lang="ts">
 import { h, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { NMenu } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
+import { useEngine } from '../composables/useEngine'
 
 const router = useRouter()
-const route = useRoute()
+const { engine, meta, switchEngine, ENGINE_OPTIONS, ENGINE_META } = useEngine()
 
 function renderIcon(emoji: string) {
   return () => h('span', { style: 'font-size: 16px' }, emoji)
 }
 
-const menuOptions: MenuOption[] = [
+const menuOptions = computed<MenuOption[]>(() => [
   {
     label: 'Campaign Report',
-    key: '/campaign-report',
-    icon: renderIcon('📊'),
+    key: `/${engine.value}/campaign-report`,
+    icon: renderIcon('\uD83D\uDCCA'),
   },
   {
     label: 'Country Breakdown',
-    key: '/country-breakdown',
-    icon: renderIcon('🌍'),
+    key: `/${engine.value}/country-breakdown`,
+    icon: renderIcon('\uD83C\uDF0D'),
   },
   {
     label: 'App Performance',
-    key: '/app-performance',
-    icon: renderIcon('⚡'),
+    key: `/${engine.value}/app-performance`,
+    icon: renderIcon('\u26A1'),
   },
   {
     label: 'Daily Revenue',
-    key: '/daily-revenue',
-    icon: renderIcon('📅'),
+    key: `/${engine.value}/daily-revenue`,
+    icon: renderIcon('\uD83D\uDCC5'),
   },
   {
     label: 'Drag & Drop',
-    key: '/drag-drop',
-    icon: renderIcon('↕️'),
+    key: `/${engine.value}/drag-drop`,
+    icon: renderIcon('\u2195\uFE0F'),
   },
-]
+])
 
-const activeKey = computed(() => route.path)
+const activeKey = computed(() => router.currentRoute.value.path)
 
 function handleSelect(key: string) {
   router.push(key)
+}
+
+function onEngineChange(value: string) {
+  switchEngine(value as typeof ENGINE_OPTIONS[number])
 }
 </script>
 
@@ -52,7 +57,19 @@ function handleSelect(key: string) {
       <span class="logo-icon">📈</span>
       <span class="logo-text">AdTech Grid</span>
     </div>
-    <div class="sidebar-subtitle">AG Grid Community Demo</div>
+    <div class="sidebar-subtitle">{{ meta.label }} Demo</div>
+
+    <div class="engine-switcher">
+      <n-radio-group :value="engine" size="small" @update:value="onEngineChange">
+        <n-radio-button
+          v-for="opt in ENGINE_OPTIONS"
+          :key="opt"
+          :value="opt"
+          :label="ENGINE_META[opt].label"
+        />
+      </n-radio-group>
+    </div>
+
     <n-menu
       :value="activeKey"
       :options="menuOptions"
@@ -60,8 +77,8 @@ function handleSelect(key: string) {
       :indent="20"
     />
     <div class="sidebar-footer">
-      <span class="footer-badge">ag-grid-community</span>
-      <span class="footer-version">MIT License</span>
+      <span class="footer-badge" :style="{ color: meta.color }">{{ meta.badge }}</span>
+      <span class="footer-version">{{ meta.license }}</span>
     </div>
   </div>
 </template>
@@ -97,9 +114,22 @@ function handleSelect(key: string) {
 }
 
 .sidebar-subtitle {
-  padding: 0 20px 16px;
+  padding: 0 20px 12px;
   font-size: 12px;
   color: #64748b;
+}
+
+.engine-switcher {
+  padding: 0 16px 12px;
+}
+
+.engine-switcher :deep(.n-radio-group) {
+  width: 100%;
+  display: flex;
+}
+
+.engine-switcher :deep(.n-radio-button) {
+  flex: 1;
 }
 
 .sidebar :deep(.n-menu) {
@@ -125,7 +155,6 @@ function handleSelect(key: string) {
 .footer-badge {
   font-size: 11px;
   font-weight: 600;
-  color: #22c55e;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
